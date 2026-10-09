@@ -14,7 +14,9 @@ st.caption(
 
 @st.cache_data(ttl=14400)  # Cache data for 4 hours to preserve API limits
 def load_live_data():
-    url = "https://treasury.gov"
+    # Use the live, open API endpoint path
+    url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query"
+    
     params = {
         "fields": "security_type,security_term,auction_date,bid_to_cover_ratio,high_yield",
         "filter": "security_type:in:(Notes,Bonds,TIPS)",
@@ -23,6 +25,7 @@ def load_live_data():
     }
     res = requests.get(url, params=params)
     return pd.DataFrame(res.json().get("data", []))
+
 
 
 df = load_live_data()

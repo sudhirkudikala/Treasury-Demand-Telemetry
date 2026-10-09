@@ -8,13 +8,20 @@ import requests
 
 
 def generate_static_page():
-    url = "https://treasury.gov"
+    # Target the dedicated Fiscal Data API gateway domain
+    base_url = "https://api.fiscaldata.treasury.gov/services/api/fiscal_service/"
+    endpoint = "v1/accounting/od/auctions_query"
+    
+    url = f"{base_url}{endpoint}"
+    
     params = {
         "fields": "security_type,security_term,auction_date,bid_to_cover_ratio,high_yield",
         "filter": "security_type:in:(Notes,Bonds,TIPS)",
         "sort": "-auction_date",
         "page[size]": 50,
     }
+    
+
 
     try:
         res = requests.get(url, params=params)
