@@ -74,6 +74,9 @@ def generate_static_page():
 
     except Exception as e:
         print(f"Pipeline Error: {e}")
+        import sys
+        sys.exit(1) # Forces the GitHub Action step to explicitly fail if index.html isn't built
+
 
 
 if __name__ == "__main__":

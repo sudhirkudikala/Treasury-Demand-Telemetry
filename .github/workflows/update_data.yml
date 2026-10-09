@@ -1,5 +1,5 @@
 #This pipeline triggers on a regular daily schedule or on manual command, 
-#runs the static builder, and pushes updates directly back to your repository.
+#runs the static builder, and pushes updates directly back to repository.
 
 name: Scheduled Data Telemetry Sync
 
@@ -35,3 +35,15 @@ jobs:
           git config --local user.name "GitHub Action"
           git add index.html
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-refresh: Treasury auction metrics" && git push)
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          # Check if the file was successfully written to disk
+          if [ -f "index.html" ]; then
+            git add index.html
+            git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-refresh: Treasury auction metrics" && git push)
+          else
+            echo "Error: index.html was never created by the python execution script."
+            exit 1
+          fi
