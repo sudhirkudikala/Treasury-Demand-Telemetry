@@ -1,0 +1,37 @@
+#This pipeline triggers on a regular daily schedule or on manual command, 
+#runs the static builder, and pushes updates directly back to your repository.
+
+name: Scheduled Data Telemetry Sync
+
+on:
+  schedule:
+    - cron: '30 18 * * 1-5' # Triggers daily Monday-Friday at 1:30 PM EST (18:30 UTC)
+  workflow_dispatch:      # Allows manual execution from the GitHub Actions tab
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-level: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Extraction Pipeline
+        run: python build_static.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-refresh: Treasury auction metrics" && git push)
